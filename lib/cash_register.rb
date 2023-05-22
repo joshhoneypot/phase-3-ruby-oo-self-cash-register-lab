@@ -1,36 +1,27 @@
-class CashRegister
-    attr_reader :discount, :total, :items
-  
-    def initialize(employee_discount = 0, total = 0.0)
-      @discount = employee_discount
-      @total = total
+  class CashRegister
+    attr_accessor :items, :discount, :total, :last_transaction
+    def initialize(discount = 0)
+      @total = 0
+      @discount = discount
       @items = []
     end
-  
-    def total=(total)
-      @total = total
+    def add_item(title, amount, quantity = 1)
+      self.last_transaction = amount * quantity
+      self.total += self.last_transaction
+      quantity.times do
+        self.items << title
+      end
     end
-  
-    def add_item(title, price, quantity = 1)
-      item_total = price * quantity
-      @total += item_total
-      quantity.times { @items << title }
-    end
-  
     def apply_discount
-      if @discount > 0
-        discount_amount = @total * (@discount.to_f / 100)
-        @total -= discount_amount
-        "After the discount, the total comes to $#{'%.0f' % @total}."
+      if self.discount != 0
+        discount_as_percent = (100.0 - self.discount.to_f) / 100
+        self.total = (self.total * discount_as_percent).to_i
+        "After the discount, the total comes to $#{self.total}."
       else
         "There is no discount to apply."
       end
     end
-    
     def void_last_transaction
-        last_item_price = @items.pop
-        @total -= last_item_price
-        @total = 0.0 if @items.empty?
-    end  
+      self.total -= self.last_transaction
+    end
   end
-  
